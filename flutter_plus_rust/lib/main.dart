@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'home_page.dart';
 import 'native_lib.dart';
 
 void main() {
@@ -6,22 +7,28 @@ void main() {
   runApp(const MainApp());
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   const MainApp({super.key});
 
   @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  final firstAddNumberController = TextEditingController();
+  final secondAddNumberController = TextEditingController();
+
+  @override
+  void dispose() {
+    firstAddNumberController.dispose();
+    secondAddNumberController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final greeting = NativeLib.greetFfi();
-    final result = NativeLib.addFfi(2, 3);
     return MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [Text(greeting), Text('2 + 3 = $result')],
-          ),
-        ),
-      ),
+      home: HomePage(),
     );
   }
 }

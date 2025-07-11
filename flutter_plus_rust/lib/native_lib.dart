@@ -38,7 +38,7 @@ class NativeLib {
     final greetFfi = greetFfiPtr.asFunction<GreetFfi>();
     final ptr = greetFfi();
     final result = ptr.cast<Utf8>().toDartString();
-    calloc.free(ptr); // Only if Rust expects Dart to free, otherwise omit
+    calloc.free(ptr);
     return result;
   }
 }
