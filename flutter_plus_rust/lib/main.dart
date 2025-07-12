@@ -15,15 +15,6 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  final firstAddNumberController = TextEditingController();
-  final secondAddNumberController = TextEditingController();
-
-  @override
-  void dispose() {
-    firstAddNumberController.dispose();
-    secondAddNumberController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
