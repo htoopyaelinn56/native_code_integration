@@ -19,6 +19,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -28,6 +29,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hm.jetpackcomposeplusrust.ui.theme.JetpackComposePlusRustTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class MainActivity : ComponentActivity() {
@@ -55,6 +59,11 @@ class MainActivity : ComponentActivity() {
                                     .align(Alignment.CenterHorizontally)
                             )
                             AddTwoNumbers(
+                                modifier = Modifier
+                                    .padding(innerPadding)
+                                    .align(Alignment.CenterHorizontally)
+                            )
+                            RandomStringSection(
                                 modifier = Modifier
                                     .padding(innerPadding)
                                     .align(Alignment.CenterHorizontally)
@@ -121,6 +130,37 @@ fun AddTwoNumbers(modifier: Modifier = Modifier) {
                 .padding(8.dp)
                 .weight(1f, true)
         )
+    }
+}
+
+@Composable
+fun RandomStringSection(modifier: Modifier = Modifier) {
+    val result = remember { mutableStateOf<String?>(null) }
+    val loading = remember { mutableStateOf(true) }
+    val scope = rememberCoroutineScope()
+    // Automatically fetch on first composition, like FutureBuilder's initial future
+    LaunchedEffect(Unit) {
+        loading.value = true
+        result.value = null
+        result.value = withContext(Dispatchers.IO) { NativeLib.getRandom() }
+        loading.value = false
+    }
+    Column(modifier = modifier) {
+        if (loading.value) {
+            Text("Loading...")
+        } else if (result.value != null) {
+            Text("Random: ${result.value}")
+        }
+        Button(onClick = {
+            loading.value = true
+            result.value = null
+            scope.launch {
+                result.value = withContext(Dispatchers.IO) { NativeLib.getRandom() }
+                loading.value = false
+            }
+        }) {
+            Text("Refresh")
+        }
     }
 }
 

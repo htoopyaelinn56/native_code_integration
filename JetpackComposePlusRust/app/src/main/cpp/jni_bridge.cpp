@@ -12,9 +12,12 @@ typedef uint64_t (*AddFfiFunc)(uint64_t, uint64_t);
 
 typedef char *(*GreetFfiFunc)();
 
+typedef char *(*GetRandomFfiFunc)();
+
 // Global variables to hold function pointers
 static AddFfiFunc rust_add_ffi = nullptr;
 static GreetFfiFunc rust_greet_ffi = nullptr;
+static GetRandomFfiFunc rust_get_random_ffi = nullptr;
 static void *rust_lib_handle = nullptr;
 
 // Load the Rust library and get function pointers
@@ -42,6 +45,14 @@ bool loadRustLibrary() {
     rust_greet_ffi = (GreetFfiFunc) dlsym(rust_lib_handle, "greet_ffi");
     if (!rust_greet_ffi) {
         LOGE("Failed to find greet_ffi function: %s", dlerror());
+        dlclose(rust_lib_handle);
+        rust_lib_handle = nullptr;
+        return false;
+    }
+
+    rust_get_random_ffi = (GetRandomFfiFunc) dlsym(rust_lib_handle, "get_random_ffi");
+    if (!rust_get_random_ffi) {
+        LOGE("Failed to find get_random_ffi function: %s", dlerror());
         dlclose(rust_lib_handle);
         rust_lib_handle = nullptr;
         return false;
@@ -80,6 +91,7 @@ dlclose(rust_lib_handle);
 rust_lib_handle = nullptr;
 rust_add_ffi = nullptr;
 rust_greet_ffi = nullptr;
+rust_get_random_ffi = nullptr;
 }
 }
 
@@ -121,5 +133,22 @@ Java_com_hm_jetpackcomposeplusrust_NativeLib_greetFfi(JNIEnv *env, jclass clazz)
     // If it uses different allocation, adjust accordingly
     free(rust_string);
 
+    return result;
+}
+
+// JNI wrapper for get_random_ffi
+extern "C" JNIEXPORT jstring JNICALL
+Java_com_hm_jetpackcomposeplusrust_NativeLib_getRandomFfi(JNIEnv *env, jclass clazz) {
+    if (!rust_get_random_ffi) {
+        LOGE("rust_get_random_ffi function pointer is null");
+        return env->NewStringUTF("Error: Rust function not loaded");
+    }
+    char *rust_string = rust_get_random_ffi();
+    if (!rust_string) {
+        LOGE("rust_get_random_ffi returned null");
+        return env->NewStringUTF("Error: Rust function returned null");
+    }
+    jstring result = env->NewStringUTF(rust_string);
+    free(rust_string);
     return result;
 }

@@ -7,8 +7,10 @@ object NativeLib {
 
     private external fun addFfi(left: Long, right: Long): Long
     private external fun greetFfi(): String
+    private external fun getRandomFfi(): String
 
     // wrapper functions
     fun add(left: Long, right: Long) = addFfi(left, right)
     fun greet() = greetFfi()
+    fun getRandom() = getRandomFfi()
 }
