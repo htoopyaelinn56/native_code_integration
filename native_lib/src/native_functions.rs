@@ -6,14 +6,13 @@ pub fn greet() -> String {
     "Hello From Rust! 🦀".to_string()
 }
 
-pub async fn get_random() -> String {
-    let body = reqwest::get("https://bored-api.appbrewery.com/random")
-        .await
+pub fn get_random() -> String {
+    let body = ureq::get("https://bored-api.appbrewery.com/random")
+        .call()
         .unwrap()
-        .text()
-        .await;
-
-    let body = body.unwrap();
+        .body_mut()
+        .read_to_string()
+        .unwrap();
     body
 }
 
@@ -31,9 +30,9 @@ mod tests {
         assert_eq!(greet(), "Hello From Rust!  🦀");
     }
 
-    #[tokio::test]
-    async fn greet_async_works() {
-        let random_data = get_random().await;
+    #[test]
+    fn greet_async_works() {
+        let random_data = get_random();
         println!("{}", random_data);
     }
 }
