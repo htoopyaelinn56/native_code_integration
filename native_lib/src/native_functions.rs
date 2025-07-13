@@ -7,13 +7,17 @@ pub fn greet() -> String {
 }
 
 pub fn get_random() -> String {
-    let body = ureq::get("https://bored-api.appbrewery.com/random")
-        .call()
-        .unwrap()
-        .body_mut()
-        .read_to_string()
-        .unwrap();
-    body
+    let response = ureq::get("https://bored-api.appbrewery.com/random").call();
+    match response {
+        Ok(mut result) => {
+            let body: String = result
+                .body_mut()
+                .read_to_string()
+                .unwrap_or_else(|_| "No data".to_string());
+            body
+        }
+        Err(_) => "Error fetching random data".to_string(),
+    }
 }
 
 #[cfg(test)]
@@ -31,7 +35,7 @@ mod tests {
     }
 
     #[test]
-    fn greet_async_works() {
+    fn get_random_works() {
         let random_data = get_random();
         println!("{}", random_data);
     }
