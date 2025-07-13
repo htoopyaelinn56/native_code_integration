@@ -20,7 +20,7 @@ class NativeLib {
   static void init() {
     if (_initialized) return;
     if (Platform.isAndroid) {
-      _lib = ffi.DynamicLibrary.open('libnative_lib.so');
+      _lib = ffi.DynamicLibrary.ope n('libnative_lib.so');
     } else if (Platform.isIOS) {
       _lib = ffi.DynamicLibrary.process();
     } else {
