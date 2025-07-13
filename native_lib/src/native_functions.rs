@@ -16,7 +16,7 @@ pub fn get_random() -> String {
                 .unwrap_or_else(|_| "No data".to_string());
             body
         }
-        Err(_) => "Error fetching random data".to_string(),
+        Err(e) => e.to_string(),
     }
 }
 
